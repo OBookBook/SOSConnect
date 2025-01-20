@@ -35,7 +35,6 @@ export async function POST(req: Request): Promise<Response> {
 
     return NextResponse.json({ success: true, data: report });
   } catch (error) {
-    console.error("[REPORTS_POST]", error);
     return NextResponse.json(
       {
         error: "通報の送信に失敗しました",
