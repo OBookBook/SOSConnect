@@ -32,7 +32,9 @@ export default function RootLayout({
         >
           <header>
             <SignedIn>
-              <UserButton></UserButton>
+              <div className="flex justify-end p-2">
+                <UserButton></UserButton>
+              </div>
             </SignedIn>
             <SignedOut>
               {/* <Link href={"/sign-in"}>ログイン</Link> */}
