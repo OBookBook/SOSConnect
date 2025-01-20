@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { ReportStatus } from "@prisma/client";
 
 export async function POST(req: Request): Promise<Response> {
   try {
@@ -26,7 +27,7 @@ export async function POST(req: Request): Promise<Response> {
         incidentDate: incidentDate,
         location: location,
         description: description,
-        status: status as any,
+        status: status as ReportStatus,
         latitude: null,
         longitude: null,
       },
