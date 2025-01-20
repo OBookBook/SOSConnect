@@ -85,15 +85,20 @@ export default function ReportPage() {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("通報の送信に失敗しました");
+        throw new Error(data.error || "通報の送信に失敗しました");
       }
 
       router.push("/report/complete");
     } catch (error) {
       toast({
         title: "エラー",
-        description: "通報の送信に失敗しました。もう一度お試しください。",
+        description:
+          error instanceof Error
+            ? error.message
+            : "予期せぬエラーが発生しました",
         variant: "destructive",
       });
     } finally {
