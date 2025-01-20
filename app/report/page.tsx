@@ -18,12 +18,20 @@ import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/toaster";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon, Send, ArrowRight } from "lucide-react";
+
 const steps = [
+  {
+    id: "type",
+    question: "どのような種類の通報でしょうか？",
+    component: "type",
+  },
   {
     id: "date",
     question: "いつ頃のことでしょうか？",
@@ -35,11 +43,6 @@ const steps = [
     component: "location",
   },
   {
-    id: "urgency",
-    question: "緊急性はどの程度でしょうか？",
-    component: "urgency",
-  },
-  {
     id: "description",
     question: "差し支えない範囲で状況を教えていただけますか？",
     component: "description",
@@ -49,16 +52,60 @@ const steps = [
 export default function ReportPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
+  const [incidentType, setIncidentType] = useState("");
   const [date, setDate] = useState<Date>();
   const [location, setLocation] = useState("");
-  const [urgency, setUrgency] = useState("");
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async () => {
+    if (!date || !location || !description || !incidentType) {
+      toast({
+        title: "エラー",
+        description: "すべての項目を入力してください。",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/reports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          incidentTypeId: incidentType,
+          incidentDate: date.toISOString(),
+          location,
+          description,
+          status: "PENDING",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("通報の送信に失敗しました");
+      }
+
+      router.push("/report/complete");
+    } catch (error) {
+      toast({
+        title: "エラー",
+        description: "通報の送信に失敗しました。もう一度お試しください。",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      router.push("/report/complete");
+      handleSubmit();
     }
   };
 
@@ -66,6 +113,21 @@ export default function ReportPage() {
     const step = steps[currentStep];
 
     switch (step.component) {
+      case "type":
+        return (
+          <Select value={incidentType} onValueChange={setIncidentType}>
+            <SelectTrigger>
+              <SelectValue placeholder="通報の種類を選択" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">暴力</SelectItem>
+              <SelectItem value="2">虐待</SelectItem>
+              <SelectItem value="3">不審者</SelectItem>
+              <SelectItem value="4">その他</SelectItem>
+            </SelectContent>
+          </Select>
+        );
+
       case "date":
         return (
           <Popover>
@@ -102,24 +164,6 @@ export default function ReportPage() {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
-        );
-
-      case "urgency":
-        return (
-          <Select value={urgency} onValueChange={setUrgency}>
-            <SelectTrigger>
-              <SelectValue placeholder="緊急性を選択" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="immediate">緊急 - 今すぐ支援が必要</SelectItem>
-              <SelectItem value="urgent">
-                急ぎ - 24時間以内に対応が必要
-              </SelectItem>
-              <SelectItem value="standard">
-                標準 - 数日以内の対応で問題ない
-              </SelectItem>
-            </SelectContent>
-          </Select>
         );
 
       case "description":
@@ -173,10 +217,11 @@ export default function ReportPage() {
               <Button
                 className="w-full bg-sky-400 hover:bg-sky-500"
                 onClick={handleNext}
+                disabled={isSubmitting}
               >
                 {currentStep === steps.length - 1 ? (
                   <>
-                    送信する
+                    {isSubmitting ? "送信中..." : "送信する"}
                     <Send className="ml-2 h-4 w-4" />
                   </>
                 ) : (
@@ -190,6 +235,7 @@ export default function ReportPage() {
           </div>
         </Card>
       </div>
+      <Toaster />
     </div>
   );
 }
