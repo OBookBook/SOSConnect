@@ -49,42 +49,53 @@ export default async function ReportList() {
 
   return (
     <div className="container mx-auto py-10">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>インシデントタイプ</TableHead>
-            <TableHead>発生日時</TableHead>
-            <TableHead>場所</TableHead>
-            <TableHead>状態</TableHead>
-            <TableHead>登録日時</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {reports.map((report, index) => (
-            <TableRow key={report.id}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{report.incidentType.name}</TableCell>
-              <TableCell>
-                {format(new Date(report.incidentDate), "yyyy/MM/dd HH:mm", {
-                  locale: ja,
-                })}
-              </TableCell>
-              <TableCell>{report.location}</TableCell>
-              <TableCell>
-                <Badge className={statusMap[report.status].color}>
-                  {statusMap[report.status].label}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {format(new Date(report.createdAt), "yyyy/MM/dd HH:mm", {
-                  locale: ja,
-                })}
-              </TableCell>
+      <div className="rounded-md border shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-gray-50">
+              <TableHead className="font-semibold">ID</TableHead>
+              <TableHead className="font-semibold">
+                インシデントタイプ
+              </TableHead>
+              <TableHead className="font-semibold">発生日時</TableHead>
+              <TableHead className="font-semibold">場所</TableHead>
+              <TableHead className="font-semibold">状態</TableHead>
+              <TableHead className="font-semibold">登録日時</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {reports.map((report, index) => (
+              <TableRow
+                key={report.id}
+                className="hover:bg-gray-50 transition-colors"
+              >
+                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell>{report.incidentType.name}</TableCell>
+                <TableCell>
+                  {format(new Date(report.incidentDate), "yyyy/MM/dd HH:mm", {
+                    locale: ja,
+                  })}
+                </TableCell>
+                <TableCell>{report.location}</TableCell>
+                <TableCell>
+                  <Badge
+                    className={`${
+                      statusMap[report.status].color
+                    } text-white px-3 py-1 rounded-full text-xs font-medium`}
+                  >
+                    {statusMap[report.status].label}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {format(new Date(report.createdAt), "yyyy/MM/dd HH:mm", {
+                    locale: ja,
+                  })}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
