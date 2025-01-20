@@ -32,7 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { LocationInput } from "../components/features/report/LocationInput";
+import { LocationInput } from "@/components/features/LocationInput";
 
 const steps = [
   {
