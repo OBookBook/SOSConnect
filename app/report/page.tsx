@@ -15,7 +15,6 @@ import {
 import {
   Home,
   Send,
-  MapPin,
   ArrowLeft,
   ArrowRight,
   Calendar as CalendarIcon,
