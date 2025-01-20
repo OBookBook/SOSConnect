@@ -1,5 +1,5 @@
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { ReportStatus } from "@prisma/client";
 
 export async function POST(req: Request): Promise<Response> {
