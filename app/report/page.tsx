@@ -15,6 +15,7 @@ import {
 import {
   Home,
   Send,
+  MapPin,
   ArrowLeft,
   ArrowRight,
   Calendar as CalendarIcon,
@@ -229,11 +230,17 @@ export default function ReportPage() {
 
       case "location":
         return (
-          <Input
-            placeholder="場所を入力"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
+          <div className="space-y-2">
+            <Input
+              placeholder="場所を入力"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+            <Button type="button" variant="outline" className="w-full">
+              <MapPin className="mr-2 h-4 w-4" />
+              現在地から入力
+            </Button>
+          </div>
         );
 
       case "description":
