@@ -137,6 +137,54 @@ export default function ReportPage() {
   };
 
   const handleNext = () => {
+    const currentComponent = steps[currentStep].component;
+
+    switch (currentComponent) {
+      case "type":
+        if (!incidentType) {
+          toast({
+            title: "入力エラー",
+            description: "通報の種類を選択してください。",
+            variant: "destructive",
+          });
+          return;
+        }
+        break;
+
+      case "date":
+        if (!date || !hour || !minute) {
+          toast({
+            title: "入力エラー",
+            description: "日付と時間を選択してください。",
+            variant: "destructive",
+          });
+          return;
+        }
+        break;
+
+      case "location":
+        if (!location.trim()) {
+          toast({
+            title: "入力エラー",
+            description: "場所を入力してください。",
+            variant: "destructive",
+          });
+          return;
+        }
+        break;
+
+      case "description":
+        if (!description.trim()) {
+          toast({
+            title: "入力エラー",
+            description: "状況の説明を入力してください。",
+            variant: "destructive",
+          });
+          return;
+        }
+        break;
+    }
+
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
