@@ -12,6 +12,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Send,
+  ArrowLeft,
+  ArrowRight,
+  Calendar as CalendarIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -24,7 +30,6 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, Send, ArrowRight } from "lucide-react";
 
 const steps = [
   {
@@ -111,6 +116,12 @@ export default function ReportPage() {
       setCurrentStep(currentStep + 1);
     } else {
       handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -219,23 +230,40 @@ export default function ReportPage() {
             <div className="space-y-4">
               {renderInput()}
 
-              <Button
-                className="w-full bg-sky-400 hover:bg-sky-500"
-                onClick={handleNext}
-                disabled={isSubmitting}
-              >
-                {currentStep === steps.length - 1 ? (
-                  <>
-                    {isSubmitting ? "送信中..." : "送信する"}
-                    <Send className="ml-2 h-4 w-4" />
-                  </>
-                ) : (
-                  <>
-                    次へ
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
+              <div className="flex gap-3">
+                {currentStep > 0 && (
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={handleBack}
+                    disabled={isSubmitting}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    戻る
+                  </Button>
                 )}
-              </Button>
+
+                <Button
+                  className={cn(
+                    "flex-1 bg-sky-400 hover:bg-sky-500",
+                    currentStep === 0 && "w-full"
+                  )}
+                  onClick={handleNext}
+                  disabled={isSubmitting}
+                >
+                  {currentStep === steps.length - 1 ? (
+                    <>
+                      {isSubmitting ? "送信中..." : "送信する"}
+                      <Send className="ml-2 h-4 w-4" />
+                    </>
+                  ) : (
+                    <>
+                      次へ
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </Card>
