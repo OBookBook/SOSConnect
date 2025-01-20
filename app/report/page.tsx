@@ -15,7 +15,6 @@ import {
 import {
   Home,
   Send,
-  MapPin,
   ArrowLeft,
   ArrowRight,
   Calendar as CalendarIcon,
@@ -28,11 +27,11 @@ import { ja } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { LocationInput } from "@/components/features/LocationInput";
 
 const steps = [
   {
@@ -277,19 +276,7 @@ export default function ReportPage() {
         );
 
       case "location":
-        return (
-          <div className="space-y-2">
-            <Input
-              placeholder="場所を入力"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-            <Button type="button" variant="outline" className="w-full">
-              <MapPin className="mr-2 h-4 w-4" />
-              現在地から入力
-            </Button>
-          </div>
-        );
+        return <LocationInput value={location} onChange={setLocation} />;
 
       case "description":
         return (
