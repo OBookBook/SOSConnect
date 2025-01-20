@@ -7,23 +7,9 @@ export async function POST(req: Request): Promise<Response> {
     const body = await req.json();
     const { incidentTypeId, incidentDate, location, description, status } =
       body;
-
-    const incidentType = await prisma.incidentType.findUnique({
-      where: {
-        id: incidentTypeId,
-      },
-    });
-
-    if (!incidentType) {
-      return NextResponse.json(
-        { error: "通報種別が見つかりません" },
-        { status: 400 }
-      );
-    }
-
     const report = await prisma.report.create({
       data: {
-        incidentTypeId: incidentType.id,
+        incidentTypeId: incidentTypeId,
         incidentDate: incidentDate,
         location: location,
         description: description,
