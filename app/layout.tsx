@@ -1,5 +1,4 @@
 import "./globals.css";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
@@ -32,10 +31,12 @@ export default function RootLayout({
         >
           <header>
             <SignedIn>
-              <UserButton></UserButton>
+              <div className="flex justify-end p-2">
+                <UserButton></UserButton>
+              </div>
             </SignedIn>
             <SignedOut>
-              <Link href={"/sign-in"}>ログイン</Link>
+              {/* <Link href={"/sign-in"}>ログイン</Link> */}
             </SignedOut>
           </header>
           {children}

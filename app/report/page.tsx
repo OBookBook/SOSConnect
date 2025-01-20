@@ -12,18 +12,34 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Home,
+  Send,
+  MapPin,
+  ArrowLeft,
+  ArrowRight,
+  Calendar as CalendarIcon,
+} from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/toaster";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, Send, ArrowRight } from "lucide-react";
+
 const steps = [
+  {
+    id: "type",
+    question: "どのような種類の通報でしょうか？",
+    component: "type",
+  },
   {
     id: "date",
     question: "いつ頃のことでしょうか？",
@@ -35,11 +51,6 @@ const steps = [
     component: "location",
   },
   {
-    id: "urgency",
-    question: "緊急性はどの程度でしょうか？",
-    component: "urgency",
-  },
-  {
     id: "description",
     question: "差し支えない範囲で状況を教えていただけますか？",
     component: "description",
@@ -49,16 +60,93 @@ const steps = [
 export default function ReportPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
+  const [incidentType, setIncidentType] = useState("");
   const [date, setDate] = useState<Date>();
   const [location, setLocation] = useState("");
-  const [urgency, setUrgency] = useState("");
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const [hour, setHour] = useState("");
+  const [minute, setMinute] = useState("");
+
+  const hours = Array.from({ length: 24 }, (_, i) => ({
+    value: i.toString().padStart(2, "0"),
+    label: `${i}時`,
+  }));
+
+  const minutes = ["00", "15", "30", "45"].map((m) => ({
+    value: m,
+    label: `${m}分`,
+  }));
+
+  const handleSubmit = async () => {
+    if (
+      !date ||
+      !location ||
+      !description ||
+      !incidentType ||
+      !hour ||
+      !minute
+    ) {
+      toast({
+        title: "エラー",
+        description: "すべての項目を入力してください。",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const dateTime = new Date(date);
+    dateTime.setHours(parseInt(hour), parseInt(minute));
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/reports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          incidentTypeId: incidentType,
+          incidentDate: dateTime.toISOString(),
+          location,
+          description,
+          status: "PENDING",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "通報の送信に失敗しました");
+      }
+
+      router.push("/report/complete");
+    } catch (error) {
+      toast({
+        title: "エラー",
+        description:
+          error instanceof Error
+            ? error.message
+            : "予期せぬエラーが発生しました",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      router.push("/report/complete");
+      handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -66,60 +154,93 @@ export default function ReportPage() {
     const step = steps[currentStep];
 
     switch (step.component) {
+      case "type":
+        return (
+          <Select value={incidentType} onValueChange={setIncidentType}>
+            <SelectTrigger>
+              <SelectValue placeholder="通報の種類を選択" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">暴力</SelectItem>
+              <SelectItem value="2">虐待</SelectItem>
+              <SelectItem value="3">不審者</SelectItem>
+              <SelectItem value="4">その他</SelectItem>
+            </SelectContent>
+          </Select>
+        );
+
       case "date":
         return (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !date && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date
-                  ? format(date, "yyyy年MM月dd日", { locale: ja })
-                  : "日付を選択"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                locale={ja}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          <div className="space-y-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date
+                    ? format(date, "yyyy年MM月dd日", { locale: ja })
+                    : "日付を選択"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  locale={ja}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+
+            <div className="flex gap-2">
+              <Select value={hour} onValueChange={setHour}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="時" />
+                </SelectTrigger>
+                <SelectContent>
+                  {hours.map(({ value, label }) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={minute} onValueChange={setMinute}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="分" />
+                </SelectTrigger>
+                <SelectContent>
+                  {minutes.map(({ value, label }) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         );
 
       case "location":
         return (
-          <Input
-            placeholder="場所を入力"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-        );
-
-      case "urgency":
-        return (
-          <Select value={urgency} onValueChange={setUrgency}>
-            <SelectTrigger>
-              <SelectValue placeholder="緊急性を選択" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="immediate">緊急 - 今すぐ支援が必要</SelectItem>
-              <SelectItem value="urgent">
-                急ぎ - 24時間以内に対応が必要
-              </SelectItem>
-              <SelectItem value="standard">
-                標準 - 数日以内の対応で問題ない
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="space-y-2">
+            <Input
+              placeholder="場所を入力"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+            <Button type="button" variant="outline" className="w-full">
+              <MapPin className="mr-2 h-4 w-4" />
+              現在地から入力
+            </Button>
+          </div>
         );
 
       case "description":
@@ -139,7 +260,19 @@ export default function ReportPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white dark:from-gray-900 dark:to-gray-950 p-4">
-      <div className="max-w-2xl mx-auto pt-16">
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-8 pt-4">
+          <Link href="/">
+            <Button
+              variant="ghost"
+              className="gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            >
+              <Home className="h-4 w-4" />
+              ホームに戻る
+            </Button>
+          </Link>
+        </div>
+
         <div className="mb-8">
           <div className="flex justify-between mb-4">
             {steps.map((step, index) => (
@@ -170,26 +303,45 @@ export default function ReportPage() {
             <div className="space-y-4">
               {renderInput()}
 
-              <Button
-                className="w-full bg-sky-400 hover:bg-sky-500"
-                onClick={handleNext}
-              >
-                {currentStep === steps.length - 1 ? (
-                  <>
-                    送信する
-                    <Send className="ml-2 h-4 w-4" />
-                  </>
-                ) : (
-                  <>
-                    次へ
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
+              <div className="flex gap-3">
+                {currentStep > 0 && (
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={handleBack}
+                    disabled={isSubmitting}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    戻る
+                  </Button>
                 )}
-              </Button>
+
+                <Button
+                  className={cn(
+                    "flex-1 bg-sky-400 hover:bg-sky-500",
+                    currentStep === 0 && "w-full"
+                  )}
+                  onClick={handleNext}
+                  disabled={isSubmitting}
+                >
+                  {currentStep === steps.length - 1 ? (
+                    <>
+                      {isSubmitting ? "送信中..." : "送信する"}
+                      <Send className="ml-2 h-4 w-4" />
+                    </>
+                  ) : (
+                    <>
+                      次へ
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </Card>
       </div>
+      <Toaster />
     </div>
   );
 }
