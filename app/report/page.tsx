@@ -13,11 +13,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  Home,
   Send,
   ArrowLeft,
   ArrowRight,
   Calendar as CalendarIcon,
 } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -199,7 +201,19 @@ export default function ReportPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-50 to-white dark:from-gray-900 dark:to-gray-950 p-4">
-      <div className="max-w-2xl mx-auto pt-16">
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-8 pt-4">
+          <Link href="/">
+            <Button
+              variant="ghost"
+              className="gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            >
+              <Home className="h-4 w-4" />
+              ホームに戻る
+            </Button>
+          </Link>
+        </div>
+
         <div className="mb-8">
           <div className="flex justify-between mb-4">
             {steps.map((step, index) => (
