@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 管理者テーブル: システムの管理者情報を管理する
+model Admin {
+  id        String     @id @default(cuid()) // 一意のID（自動生成）
+  email     String?    @unique // メールアドレス（重複不可）
+  name      String // 管理者名
+  role      AdminRole  @default(STAFF) // 役割（デフォルトは一般スタッフ）
+  isActive  Boolean    @default(true) // アカウントの有効状態
+  responses Response[] // 管理者が行った返信（1対多の関係）
+  createdAt DateTime   @default(now()) // 作成日時
+  updatedAt DateTime   @updatedAt // 更新日時
+
+  @@map("admins") // 実際のテーブル名を指定
+}
+
+enum AdminRole {
+  SUPER_ADMIN // システム全体の管理権限を持つ
+  ADMIN // 一般的な管理権限を持つ
+  STAFF // 基本的な操作のみ可能な一般スタッフ
+}
+
+// 事件種別テーブル: 通報される事件の種類を管理する
+model IncidentType {
+  id          String   @id @default(cuid()) // 一意のID
+  name        String   @unique // 種別名（重複不可）
+  description String? // 説明（省略可能）
+  reports     Report[] // この種別に属する通報（1対多の関係）
+  createdAt   DateTime @default(now()) // 作成日時
+  updatedAt   DateTime @updatedAt // 更新日時
+
+  @@map("incident_types")
+}
+
+// 通報テーブル: 実際の通報情報を保存する
+model Report {
+  id             String       @id @default(cuid()) // 一意のID
+  incidentType   IncidentType @relation(fields: [incidentTypeId], references: [id]) // 事件種別との関係
+  incidentTypeId String // 事件種別のID（外部キー）
+  incidentDate   DateTime // 事件発生日時
+  location       String // 発生場所
+  latitude       Float? // 緯度（省略可能）
+  longitude      Float? // 経度（省略可能）
+  description    String       @db.Text // 詳細な説明（長文可能）
+  status         ReportStatus @default(PENDING) // 対応状態
+  reportedAt     DateTime     @default(now()) // 通報された日時
+
+  // 関連するデータとの関係
+  images    Image[] // 添付画像（1対多）
+  videos    Video[] // 添付動画（1対多）
+  responses Response[] // 管理者からの返信（1対多）
+
+  createdAt DateTime @default(now()) // 作成日時
+  updatedAt DateTime @updatedAt // 更新日時
+
+  @@map("reports")
+}
+
+// 画像テーブル: 通報に添付される画像を管理する
+model Image {
+  id        String   @id @default(cuid()) // 一意のID
+  reportId  String // 通報のID（外部キー）
+  report    Report   @relation(fields: [reportId], references: [id]) // 通報との関係
+  filename  String // ファイル名
+  fileUrl   String // 保存URL
+  fileSize  Int // ファイルサイズ（バイト）
+  createdAt DateTime @default(now()) // 作成日時
+  updatedAt DateTime @updatedAt // 更新日時
+
+  @@map("images")
+}
+
+// 動画テーブル: 通報に添付される動画を管理する
+model Video {
+  id        String   @id @default(cuid()) // 一意のID
+  reportId  String // 通報のID（外部キー）
+  report    Report   @relation(fields: [reportId], references: [id]) // 通報との関係
+  filename  String // ファイル名
+  fileUrl   String // 保存URL
+  fileSize  Int // ファイルサイズ（バイト）
+  duration  Int? // 動画の長さ（秒、省略可能）
+  createdAt DateTime @default(now()) // 作成日時
+  updatedAt DateTime @updatedAt // 更新日時
+
+  @@map("videos")
+}
+
+// 管理者返信テーブル: 通報に対する管理者からの返信を管理する
+model Response {
+  id         String   @id @default(cuid()) // 一意のID
+  reportId   String // 通報のID（外部キー）
+  report     Report   @relation(fields: [reportId], references: [id]) // 通報との関係
+  adminId    String // 管理者のID（外部キー）
+  admin      Admin    @relation(fields: [adminId], references: [id]) // 管理者との関係
+  comment    String   @db.Text // 返信内容（長文可能）
+  isReported Boolean  @default(false) // 報告済みフラグ
+  createdAt  DateTime @default(now()) // 作成日時
+  updatedAt  DateTime @updatedAt // 更新日時
+
+  @@map("responses")
+}
+
+// 通報の対応状態を定義する列挙型
+enum ReportStatus {
+  PENDING // 未対応
+  REVIEWING // 確認中
+  IN_PROGRESS // 対応中
+  RESOLVED // 解決済み
+  REJECTED // 却下
+}
