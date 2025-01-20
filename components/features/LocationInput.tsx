@@ -53,7 +53,7 @@ export function LocationInput({ value, onChange }: LocationInputProps) {
         title: "位置情報を取得しました",
         description: location,
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "エラーが発生しました",
         description: "位置情報の取得に失敗しました",
