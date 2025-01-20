@@ -40,10 +40,7 @@ export default function RootLayout({
             </h2>
             <ReportList />
           </SignedIn>
-          <SignedOut>
-            {/* <Link href={"/sign-in"}>ログイン</Link> */}
-            {children}
-          </SignedOut>
+          <SignedOut>{children}</SignedOut>
         </body>
       </html>
     </ClerkProvider>
