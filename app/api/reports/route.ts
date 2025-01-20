@@ -23,12 +23,12 @@ export async function POST(req: Request) {
     const report = await prisma.report.create({
       data: {
         incidentTypeId: incidentType.id,
-        incidentDate: new Date(incidentDate), // 日付を適切な形式に変換
+        incidentDate: incidentDate,
         location: location,
         description: description,
-        status: status as any, // PrismaのReportStatusとして扱う
-        latitude: null, // オプショナルなフィールド
-        longitude: null, // オプショナルなフィールド
+        status: status as any,
+        latitude: null,
+        longitude: null,
       },
     });
 

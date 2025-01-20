@@ -65,9 +65,28 @@ export default function ReportPage() {
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const [hour, setHour] = useState("");
+  const [minute, setMinute] = useState("");
+
+  const hours = Array.from({ length: 24 }, (_, i) => ({
+    value: i.toString().padStart(2, "0"),
+    label: `${i}時`,
+  }));
+
+  const minutes = ["00", "15", "30", "45"].map((m) => ({
+    value: m,
+    label: `${m}分`,
+  }));
 
   const handleSubmit = async () => {
-    if (!date || !location || !description || !incidentType) {
+    if (
+      !date ||
+      !location ||
+      !description ||
+      !incidentType ||
+      !hour ||
+      !minute
+    ) {
       toast({
         title: "エラー",
         description: "すべての項目を入力してください。",
@@ -75,6 +94,9 @@ export default function ReportPage() {
       });
       return;
     }
+
+    const dateTime = new Date(date);
+    dateTime.setHours(parseInt(hour), parseInt(minute));
 
     setIsSubmitting(true);
     try {
@@ -85,7 +107,7 @@ export default function ReportPage() {
         },
         body: JSON.stringify({
           incidentTypeId: incidentType,
-          incidentDate: date.toISOString(),
+          incidentDate: dateTime.toISOString(),
           location,
           description,
           status: "PENDING",
@@ -148,31 +170,61 @@ export default function ReportPage() {
 
       case "date":
         return (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !date && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date
-                  ? format(date, "yyyy年MM月dd日", { locale: ja })
-                  : "日付を選択"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                locale={ja}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          <div className="space-y-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date
+                    ? format(date, "yyyy年MM月dd日", { locale: ja })
+                    : "日付を選択"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  locale={ja}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+
+            <div className="flex gap-2">
+              <Select value={hour} onValueChange={setHour}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="時" />
+                </SelectTrigger>
+                <SelectContent>
+                  {hours.map(({ value, label }) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={minute} onValueChange={setMinute}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="分" />
+                </SelectTrigger>
+                <SelectContent>
+                  {minutes.map(({ value, label }) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         );
 
       case "location":
