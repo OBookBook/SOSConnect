@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import ReportList from "@/components/features/admin/ReportList";
 import { ClerkProvider, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const geistSans = Geist({
@@ -29,17 +30,19 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <header>
-            <SignedIn>
-              <div className="flex justify-end p-2">
-                <UserButton></UserButton>
-              </div>
-            </SignedIn>
-            <SignedOut>
-              {/* <Link href={"/sign-in"}>ログイン</Link> */}
-            </SignedOut>
-          </header>
-          {children}
+          <SignedIn>
+            <div className="flex justify-end p-2">
+              <UserButton></UserButton>
+            </div>
+            <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-gray-200 my-4">
+              管理者ページ
+            </h2>
+            <ReportList />
+          </SignedIn>
+          <SignedOut>
+            {/* <Link href={"/sign-in"}>ログイン</Link> */}
+            {children}
+          </SignedOut>
         </body>
       </html>
     </ClerkProvider>

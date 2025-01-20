@@ -30,3 +30,26 @@ export async function POST(req: Request): Promise<Response> {
     );
   }
 }
+
+export async function GET(): Promise<Response> {
+  try {
+    const reports = await prisma.report.findMany({
+      include: {
+        incidentType: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return NextResponse.json({ success: true, data: reports });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: "レポートの取得に失敗しました",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+}
