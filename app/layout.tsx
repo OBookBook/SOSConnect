@@ -35,7 +35,7 @@ export default function RootLayout({
               <UserButton></UserButton>
             </SignedIn>
             <SignedOut>
-              <Link href={"/sign-in"}>ログイン</Link>
+              {/* <Link href={"/sign-in"}>ログイン</Link> */}
             </SignedOut>
           </header>
           {children}
