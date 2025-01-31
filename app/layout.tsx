@@ -38,7 +38,7 @@ export default function RootLayout({
             <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-gray-200 my-4">
               管理者ページ
             </h2>
-            <ReportList />
+            {/* <ReportList /> */}
           </SignedIn>
           <SignedOut>{children}</SignedOut>
         </body>
