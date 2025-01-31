@@ -29,12 +29,17 @@ export default function Home() {
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <HeroSection />
+          <div className="md:hidden">
+            <ReportButton />
+          </div>
           <div className="grid gap-8 md:grid-cols-3 mb-12">
             {FEATURES.map((feature) => (
               <FeatureCard key={feature.title} {...feature} />
             ))}
           </div>
-          <ReportButton />
+          <div className="hidden md:block">
+            <ReportButton />
+          </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
             * 緊急の危険がある場合は、すぐに110番通報してください
           </p>
