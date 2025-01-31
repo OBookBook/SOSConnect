@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import ReportList from "@/components/features/admin/ReportList";
 import { ClerkProvider, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const geistSans = Geist({
@@ -38,7 +37,7 @@ export default function RootLayout({
             <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-gray-200 my-4">
               管理者ページ
             </h2>
-            <ReportList />
+            {/* <ReportList /> */}
           </SignedIn>
           <SignedOut>{children}</SignedOut>
         </body>
