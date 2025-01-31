@@ -100,26 +100,27 @@ export default function ReportPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/reports", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          incidentTypeId: incidentType,
-          incidentDate: dateTime.toISOString(),
-          location,
-          description,
-          status: "PENDING",
-        }),
-      });
+      // const response = await fetch("/api/reports", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     incidentTypeId: incidentType,
+      //     incidentDate: dateTime.toISOString(),
+      //     location,
+      //     description,
+      //     status: "PENDING",
+      //   }),
+      // });
 
-      const data = await response.json();
+      // const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || "通報の送信に失敗しました");
-      }
+      // if (!response.ok) {
+      //   throw new Error(data.error || "通報の送信に失敗しました");
+      // }
 
+      // モック用に直接次のページへ遷移
       router.push("/report/complete");
     } catch (error) {
       toast({
