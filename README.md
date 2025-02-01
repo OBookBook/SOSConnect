@@ -1,37 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 匿名通報アプリ: SOS Connect
 
-## Getting Started
+## 📱 プロダクト概要
 
-First, run the development server:
+「安心通報」は、暴力や虐待の目撃者が安全に通報できる匿名通報アプリです。目撃者の身の安全を最優先に考え、簡単な操作で確実に支援機関へ情報を届けることができます。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🎯 解決する課題
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- DV や虐待の目撃者が身の安全を懸念して通報を躊躇する問題
+- 通報方法が分からず、行動を起こせない問題
+- 通報後の不安や心理的負担
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 💡 主な機能
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **匿名チャット通報**
 
-## Learn More
+   - テンプレート形式で簡単に状況を報告
+   - 個人を特定できない安全な通信
 
-To learn more about Next.js, take a look at the following resources:
+2. **緊急機能**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   - ワンタップで画面を切り替えられる緊急ボタン
+   - 通報履歴の即時削除機能
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **サポート機能**
+   - GPS 連動による最寄りの支援機関の自動表示
+   - 通報後のフォローアップメッセージ
 
-## Deploy on Vercel
+## 🛠 開発プロセス
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 1. 課題の解釈
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# SOSConnect
+暴力や虐待の目撃者が直面する最大の障壁は「自身の安全性への不安」でした。
+この課題に対して、完全な匿名性と簡単な操作性を重視したソリューションを目指しました。
+
+### 2. ユーザー調査
+
+- 支援団体へのヒアリング
+- 通報経験者へのアンケート
+- 既存の通報システムの分析
+
+### 3. プロトタイプ検証
+
+- ペーパープロトタイプによる操作性の検証
+- 支援団体との連携テスト
+- セキュリティ面での検証
+
+## 🔜 今後の展開
+
+- 多言語対応
+- 支援機関との API 連携の拡大
+- 通報データの匿名化と分析による予防施策の提案
+
+## 🔗 プロトタイプ
+
+[Figma プロトタイプ](URL)
+
+## 📝 作品の特徴
+
+- 徹底的な匿名性の確保
+- 直感的な UI/UX
+- 支援機関との連携体制
+- 心理的安全性への配慮
+
+---
+
+開発者: [お名前]
+連絡先: [メールアドレス]
+
+https://sos-connect.vercel.app/
